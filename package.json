@@ -1,0 +1,38 @@
+{
+	"name": "financial-data-generator",
+	"description": "Synthetic finance-document factory for testing AI finance-operations agents. Generates invoices, purchase orders, GRNs, bank/credit-card statements, receipts, tax docs, emails and Slack events, driven by a scenario engine with deliberate mutations.",
+	"cloudflare": {
+		"label": "Synthetic Finance Data Generator",
+		"products": [
+			"Workers"
+		],
+		"categories": [
+			"starter"
+		],
+		"publish": true
+	},
+	"dependencies": {
+		"better-auth": "^1.7.2",
+		"pdf-lib": "^1.17.1",
+		"xlsx": "^0.18.5",
+		"zod": "^3.23.8"
+	},
+	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "0.21.3",
+		"@cloudflare/workers-types": "^5.20260826.1",
+		"@vitest/runner": "4.1.10",
+		"@vitest/snapshot": "4.1.10",
+		"typescript": "5.9.3",
+		"vitest": "4.1.10",
+		"wrangler": "4.127.0"
+	},
+	"private": true,
+	"scripts": {
+		"cf-typegen": "wrangler types",
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev",
+		"tail": "wrangler tail",
+		"test": "vitest run",
+		"test:watch": "vitest"
+	}
+}

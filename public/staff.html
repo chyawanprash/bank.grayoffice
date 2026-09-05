@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Branches &amp; Staff — Bank of Apna Nagar</title>
+		<style>
+			:root {
+				--orange-500: #f6821f;
+				--orange-600: #e0740d;
+				--gray-50: #f9fafb;
+				--gray-100: #f3f4f6;
+				--gray-200: #e5e7eb;
+				--gray-300: #d1d5db;
+				--gray-600: #4b5563;
+				--gray-700: #374151;
+				--gray-800: #1f2937;
+				--gray-900: #111827;
+			}
+
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family:
+					-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+					"Helvetica Neue", Arial, sans-serif;
+				background: var(--gray-50);
+				color: var(--gray-800);
+				line-height: 1.6;
+				min-height: 100vh;
+			}
+
+			.topnav {
+				position: sticky;
+				top: 0;
+				z-index: 50;
+				background: white;
+				border-bottom: 1px solid var(--gray-200);
+			}
+
+			.topnav-inner {
+				max-width: 1100px;
+				margin: 0 auto;
+				padding: 0.875rem 2rem;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 1rem;
+				flex-wrap: wrap;
+			}
+
+			.topnav-brand {
+				font-weight: 700;
+				color: var(--gray-900);
+				text-decoration: none;
+				font-size: 1.0625rem;
+			}
+
+			.topnav-links {
+				display: flex;
+				gap: 1.25rem;
+				flex-wrap: wrap;
+			}
+
+			.topnav-links a {
+				color: var(--gray-600);
+				text-decoration: none;
+				font-size: 0.9375rem;
+				font-weight: 500;
+			}
+
+			.topnav-links a:hover,
+			.topnav-links a.active {
+				color: var(--orange-500);
+			}
+
+			.container {
+				max-width: 1100px;
+				margin: 0 auto;
+				padding: 2rem;
+			}
+
+			.page-header {
+				text-align: center;
+				padding: 2.5rem 0;
+			}
+
+			h1 {
+				font-size: 2rem;
+				font-weight: 700;
+				color: var(--gray-900);
+				margin-bottom: 0.5rem;
+			}
+
+			.subtitle {
+				font-size: 1.0625rem;
+				color: var(--gray-600);
+				max-width: 640px;
+				margin: 0 auto;
+			}
+
+			.section {
+				background: white;
+				border-radius: 1rem;
+				padding: 2rem;
+				margin-bottom: 1.5rem;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+			}
+
+			.person {
+				text-align: center;
+			}
+
+			.person .name {
+				font-weight: 600;
+				font-size: 0.9375rem;
+				margin-top: 0.5rem;
+				color: var(--gray-900);
+			}
+
+			.branch-card {
+				background: var(--gray-50);
+				border-radius: 0.75rem;
+				padding: 1.25rem;
+				margin-bottom: 1rem;
+			}
+
+			.branch-card:last-child {
+				margin-bottom: 0;
+			}
+
+			.branch-card .branch-head {
+				display: flex;
+				align-items: center;
+				gap: 1rem;
+				margin-bottom: 0.75rem;
+			}
+
+			.branch-card .branch-head img {
+				width: 64px;
+				height: 64px;
+				border-radius: 50%;
+				object-fit: cover;
+				border: 2px solid var(--gray-200);
+				flex-shrink: 0;
+			}
+
+			.branch-card .branch-head h3 {
+				font-size: 1.0625rem;
+				color: var(--gray-900);
+			}
+
+			.branch-card .branch-head .meta {
+				font-size: 0.8125rem;
+				color: var(--gray-600);
+			}
+
+			.staff-row {
+				display: flex;
+				gap: 0.75rem;
+				flex-wrap: wrap;
+			}
+
+			.staff-row .person img {
+				width: 56px;
+				height: 56px;
+				border-radius: 50%;
+				object-fit: cover;
+				border: 2px solid var(--gray-200);
+			}
+
+			.staff-row .person .name {
+				font-size: 0.8125rem;
+				margin-top: 0.25rem;
+			}
+
+			code.inline {
+				background: var(--gray-100);
+				padding: 0.125rem 0.375rem;
+				border-radius: 0.25rem;
+				font-size: 0.85em;
+			}
+
+			footer {
+				text-align: center;
+				padding: 2rem;
+				color: var(--gray-500);
+				font-size: 0.875rem;
+			}
+
+			footer a {
+				color: var(--orange-500);
+				text-decoration: none;
+			}
+
+			footer a:hover {
+				text-decoration: underline;
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="topnav">
+			<div class="topnav-inner">
+				<a href="/" class="topnav-brand">Bank of Apna Nagar</a>
+				<div class="topnav-links">
+					<a href="/">Home</a>
+					<a href="/staff" class="active">Branches &amp; Staff</a>
+					<a href="/account">Account</a>
+					<a href="/leaderboard">Leaderboard</a>
+					<a href="/docs">API Docs</a>
+					<a href="/generator">Generator</a>
+				</div>
+			</div>
+		</nav>
+
+		<div class="container">
+			<header class="page-header">
+				<h1>Branches &amp; Staff</h1>
+				<p class="subtitle">All 7 branches of Bank of Apna Nagar, their IFSC codes, managers and employees.</p>
+			</header>
+
+			<section class="section">
+				<div id="branchCards">Loading…</div>
+			</section>
+
+			<footer>
+				Built with
+				<a href="https://workers.cloudflare.com">Cloudflare Workers</a> ·
+				All accounts and transactions are dummy data.
+			</footer>
+		</div>
+
+		<script>
+			function personCard(name, image) {
+				return `<div class="person"><img src="${encodeURI(image)}" alt="${name}" /><div class="name">${name}</div></div>`;
+			}
+
+			fetch("/bank/branches")
+				.then((r) => r.json())
+				.then((data) => {
+					const branches = data.branches ?? [];
+					document.getElementById("branchCards").innerHTML = branches
+						.map(
+							(b) => `
+						<div class="branch-card">
+							<div class="branch-head">
+								<img src="${encodeURI(b.manager_image)}" alt="${b.manager_name}" />
+								<div>
+									<h3>${b.name}</h3>
+									<div class="meta">IFSC <code class="inline">${b.ifsc}</code> · ${b.address}</div>
+									<div class="meta">Branch Manager: <strong>${b.manager_name}</strong></div>
+								</div>
+							</div>
+							<div class="staff-row">
+								${(b.employees ?? []).map((e) => personCard(e.name, e.pfp)).join("")}
+							</div>
+						</div>`,
+						)
+						.join("");
+				})
+				.catch(() => {
+					document.getElementById("branchCards").textContent = "Failed to load branches.";
+				});
+		</script>
+	</body>
+</html>

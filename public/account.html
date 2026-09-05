@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Open an Account — Bank of Apna Nagar</title>
+		<style>
+			:root {
+				--orange-500: #f6821f;
+				--orange-600: #e0740d;
+				--gray-50: #f9fafb;
+				--gray-100: #f3f4f6;
+				--gray-200: #e5e7eb;
+				--gray-300: #d1d5db;
+				--gray-600: #4b5563;
+				--gray-700: #374151;
+				--gray-800: #1f2937;
+				--gray-900: #111827;
+				--green-500: #22c55e;
+				--red-500: #ef4444;
+			}
+
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family:
+					-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+					"Helvetica Neue", Arial, sans-serif;
+				background: var(--gray-50);
+				color: var(--gray-800);
+				line-height: 1.6;
+				min-height: 100vh;
+			}
+
+			.topnav {
+				position: sticky;
+				top: 0;
+				z-index: 50;
+				background: white;
+				border-bottom: 1px solid var(--gray-200);
+			}
+
+			.topnav-inner {
+				max-width: 1100px;
+				margin: 0 auto;
+				padding: 0.875rem 2rem;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 1rem;
+				flex-wrap: wrap;
+			}
+
+			.topnav-brand {
+				font-weight: 700;
+				color: var(--gray-900);
+				text-decoration: none;
+				font-size: 1.0625rem;
+			}
+
+			.topnav-links {
+				display: flex;
+				gap: 1.25rem;
+				flex-wrap: wrap;
+			}
+
+			.topnav-links a {
+				color: var(--gray-600);
+				text-decoration: none;
+				font-size: 0.9375rem;
+				font-weight: 500;
+			}
+
+			.topnav-links a:hover,
+			.topnav-links a.active {
+				color: var(--orange-500);
+			}
+
+			.container {
+				max-width: 1100px;
+				margin: 0 auto;
+				padding: 2rem;
+			}
+
+			.page-header {
+				text-align: center;
+				padding: 2.5rem 0;
+			}
+
+			h1 {
+				font-size: 2rem;
+				font-weight: 700;
+				color: var(--gray-900);
+				margin-bottom: 0.5rem;
+			}
+
+			.subtitle {
+				font-size: 1.0625rem;
+				color: var(--gray-600);
+				max-width: 640px;
+				margin: 0 auto;
+			}
+
+			.section {
+				background: white;
+				border-radius: 1rem;
+				padding: 2rem;
+				margin-bottom: 1.5rem;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+			}
+
+			.try-it {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 1rem;
+			}
+
+			@media (max-width: 700px) {
+				.try-it {
+					grid-template-columns: 1fr;
+				}
+			}
+
+			.field {
+				display: flex;
+				flex-direction: column;
+				gap: 0.25rem;
+			}
+
+			.field label {
+				font-size: 0.8125rem;
+				font-weight: 600;
+				color: var(--gray-700);
+			}
+
+			.field select,
+			.field input {
+				padding: 0.5rem 0.75rem;
+				border: 1px solid var(--gray-300);
+				border-radius: 0.5rem;
+				font-size: 0.9375rem;
+				background: white;
+			}
+
+			.try-it .full-width {
+				grid-column: 1 / -1;
+			}
+
+			button.run {
+				grid-column: 1 / -1;
+				padding: 0.75rem 1.25rem;
+				background: var(--orange-500);
+				color: white;
+				border: none;
+				border-radius: 0.5rem;
+				font-weight: 600;
+				font-size: 0.9375rem;
+				cursor: pointer;
+			}
+
+			button.run:hover {
+				background: var(--orange-600);
+			}
+
+			button.run:disabled {
+				background: var(--gray-300);
+				cursor: not-allowed;
+			}
+
+			.actions {
+				grid-column: 1 / -1;
+				display: none;
+				flex-direction: column;
+				gap: 1rem;
+				margin-top: 0.5rem;
+				padding-top: 1rem;
+				border-top: 1px solid var(--gray-200);
+			}
+
+			.action-row {
+				display: flex;
+				gap: 0.5rem;
+				flex-wrap: wrap;
+				align-items: flex-end;
+			}
+
+			.action-row .field {
+				flex: 1;
+				min-width: 140px;
+			}
+
+			.action-row button {
+				padding: 0.5rem 1rem;
+				border: none;
+				border-radius: 0.5rem;
+				font-weight: 600;
+				font-size: 0.875rem;
+				cursor: pointer;
+				color: white;
+				white-space: nowrap;
+			}
+
+			.action-row button.credit {
+				background: var(--green-500);
+			}
+
+			.action-row button.debit {
+				background: var(--red-500);
+			}
+
+			.action-row button.neutral {
+				background: var(--gray-700);
+			}
+
+			#result {
+				margin-top: 1rem;
+				grid-column: 1 / -1;
+			}
+
+			#result pre,
+			#txResult pre {
+				background: var(--gray-900);
+				color: var(--gray-100);
+				padding: 1rem;
+				border-radius: 0.5rem;
+				overflow-x: auto;
+				font-size: 0.8125rem;
+				max-height: 360px;
+			}
+
+			footer {
+				text-align: center;
+				padding: 2rem;
+				color: var(--gray-500);
+				font-size: 0.875rem;
+			}
+
+			footer a {
+				color: var(--orange-500);
+				text-decoration: none;
+			}
+
+			footer a:hover {
+				text-decoration: underline;
+			}
+
+			.auth-tabs {
+				display: flex;
+				gap: 0.5rem;
+				margin-bottom: 1rem;
+			}
+
+			.auth-tabs button {
+				flex: 1;
+				padding: 0.5rem;
+				border: 1px solid var(--gray-300);
+				background: white;
+				border-radius: 0.5rem;
+				font-weight: 600;
+				font-size: 0.875rem;
+				cursor: pointer;
+				color: var(--gray-700);
+			}
+
+			.auth-tabs button.active {
+				background: var(--gray-900);
+				color: white;
+				border-color: var(--gray-900);
+			}
+
+			.whoami {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+			}
+
+			.whoami img {
+				width: 40px;
+				height: 40px;
+				border-radius: 50%;
+				object-fit: cover;
+				border: 2px solid var(--gray-200);
+			}
+
+			.whoami button {
+				margin-left: auto;
+				padding: 0.5rem 1rem;
+				border: 1px solid var(--gray-300);
+				background: white;
+				border-radius: 0.5rem;
+				font-size: 0.875rem;
+				cursor: pointer;
+			}
+
+			.account-summary {
+				display: flex;
+				align-items: center;
+				gap: 1rem;
+				margin-bottom: 1.5rem;
+			}
+
+			.account-summary img {
+				width: 64px;
+				height: 64px;
+				border-radius: 50%;
+				object-fit: cover;
+				border: 2px solid var(--gray-200);
+			}
+
+			.account-summary .meta {
+				font-size: 0.875rem;
+				color: var(--gray-600);
+			}
+
+			.account-summary .balance {
+				margin-left: auto;
+				text-align: right;
+				font-size: 1.5rem;
+				font-weight: 700;
+				color: var(--gray-900);
+			}
+
+			.account-summary .balance .label {
+				font-size: 0.8125rem;
+				font-weight: 500;
+				color: var(--gray-600);
+			}
+
+			.events-table {
+				width: 100%;
+				border-collapse: collapse;
+			}
+
+			.events-table th,
+			.events-table td {
+				padding: 0.625rem 0.75rem;
+				text-align: left;
+				border-bottom: 1px solid var(--gray-200);
+				font-size: 0.875rem;
+			}
+
+			.events-table th {
+				font-weight: 600;
+				color: var(--gray-700);
+				font-size: 0.8125rem;
+			}
+
+			.events-table tr:last-child td {
+				border-bottom: none;
+			}
+
+			.amount.credit {
+				color: var(--green-500);
+				font-weight: 600;
+			}
+
+			.amount.debit {
+				color: var(--red-500);
+				font-weight: 600;
+			}
+
+			code.inline {
+				background: var(--gray-100);
+				padding: 0.125rem 0.375rem;
+				border-radius: 0.25rem;
+				font-size: 0.85em;
+			}
+
+			.copy-id {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.375rem;
+				background: none;
+				border: none;
+				cursor: pointer;
+				font-family: inherit;
+				color: inherit;
+				padding: 0;
+			}
+
+			.copy-id .copy-feedback {
+				font-size: 0.75rem;
+				color: var(--orange-500);
+				opacity: 0;
+				transition: opacity 0.15s;
+			}
+
+			.copy-id.copied .copy-feedback {
+				opacity: 1;
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="topnav">
+			<div class="topnav-inner">
+				<a href="/" class="topnav-brand">Bank of Apna Nagar</a>
+				<div class="topnav-links">
+					<a href="/">Home</a>
+					<a href="/staff">Branches &amp; Staff</a>
+					<a href="/account" class="active">Account</a>
+					<a href="/leaderboard">Leaderboard</a>
+					<a href="/docs">API Docs</a>
+					<a href="/generator">Generator</a>
+				</div>
+			</div>
+		</nav>
+
+		<div class="container">
+			<header class="page-header">
+				<h1 id="pageTitle">Open an Account</h1>
+				<p class="subtitle" id="pageSubtitle">Sign in, then open a dummy account at any branch and credit, debit or subscribe it to an auto-charging company. Limit: 2 new accounts per hour per IP.</p>
+			</header>
+
+			<section class="section" id="viewSection" style="display: none">
+				<div class="account-summary">
+					<img id="viewAvatar" src="/images/mukesh.png" alt="" />
+					<div>
+						<div id="viewHolderName" style="font-weight: 600; font-size: 1.0625rem"></div>
+						<div class="meta" id="viewBranch"></div>
+						<div class="meta">Account <code class="inline" id="viewAccountId"></code></div>
+					</div>
+					<div class="balance">
+						<div class="label">Balance</div>
+						<div id="viewBalance"></div>
+					</div>
+				</div>
+				<h2 style="font-size: 1.0625rem; margin-bottom: 0.75rem">Transactions</h2>
+				<table class="events-table">
+					<thead>
+						<tr>
+							<th>Date &amp; Time</th>
+							<th>Type</th>
+							<th>Description</th>
+							<th>Amount</th>
+							<th>Balance After</th>
+							<th>Transaction ID</th>
+						</tr>
+					</thead>
+					<tbody id="viewTxRows">
+						<tr>
+							<td colspan="6">Loading…</td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+
+			<section class="section" id="authSection">
+				<div id="signedOut">
+					<div class="auth-tabs">
+						<button id="tabSignIn" class="active">Sign In</button>
+						<button id="tabSignUp">Sign Up</button>
+					</div>
+					<div class="try-it" id="signInForm">
+						<div class="field full-width">
+							<label for="siEmail">Email</label>
+							<input id="siEmail" type="email" placeholder="you@example.com" />
+						</div>
+						<div class="field full-width">
+							<label for="siPassword">Password</label>
+							<input id="siPassword" type="password" />
+						</div>
+						<button class="run" id="signInBtn">Sign In</button>
+					</div>
+					<div class="try-it" id="signUpForm" style="display: none">
+						<div class="field">
+							<label for="suName">Name</label>
+							<input id="suName" type="text" placeholder="e.g. Ramesh Kumar" />
+						</div>
+						<div class="field">
+							<label for="suImage">Profile Picture URL (optional)</label>
+							<input id="suImage" type="text" placeholder="/images/mukesh.png" />
+						</div>
+						<div class="field">
+							<label for="suEmail">Email</label>
+							<input id="suEmail" type="email" placeholder="you@example.com" />
+						</div>
+						<div class="field">
+							<label for="suPassword">Password</label>
+							<input id="suPassword" type="password" />
+						</div>
+						<button class="run" id="signUpBtn">Sign Up</button>
+					</div>
+					<div id="authResult"></div>
+				</div>
+				<div id="signedIn" class="whoami" style="display: none">
+					<img id="whoamiImg" src="" alt="" />
+					<div>
+						Signed in as <strong id="whoamiName"></strong>
+					</div>
+					<button id="signOutBtn">Sign Out</button>
+				</div>
+			</section>
+
+			<section class="section" id="openAccountSection" style="display: none">
+				<div class="try-it">
+					<div class="field full-width">
+						<label for="branch">Branch</label>
+						<select id="branch"></select>
+					</div>
+					<div class="field full-width">
+						<label for="openingBalance">Opening Balance (₹)</label>
+						<input id="openingBalance" type="number" min="0" value="1000" />
+					</div>
+					<button class="run" id="createBtn">Open Account</button>
+					<div id="result"></div>
+
+					<div class="actions" id="actions">
+						<div class="action-row">
+							<div class="field">
+								<label for="amount">Amount (₹)</label>
+								<input id="amount" type="number" min="1" value="100" />
+							</div>
+							<button class="credit" id="creditBtn">Credit</button>
+							<button class="debit" id="debitBtn">Debit</button>
+						</div>
+						<div class="action-row">
+							<div class="field">
+								<label for="companyName">Dummy Company (hourly auto-charge)</label>
+								<input id="companyName" type="text" placeholder="e.g. Apna Nagar Electricity Board" value="Apna Nagar Electricity Board" />
+							</div>
+							<div class="field">
+								<label for="chargeAmount">Charge/hour (₹)</label>
+								<input id="chargeAmount" type="number" min="1" value="10" style="max-width: 100px" />
+							</div>
+							<button class="neutral" id="subscribeBtn">Subscribe</button>
+							<button class="neutral" id="tickBtn">Start Live Ticking (10 min)</button>
+						</div>
+						<div id="txResult"></div>
+					</div>
+				</div>
+			</section>
+
+			<footer>
+				Built with
+				<a href="https://workers.cloudflare.com">Cloudflare Workers</a> ·
+				All accounts and transactions are dummy data.
+			</footer>
+		</div>
+
+		<script>
+			function escapeHtml(s) {
+				return String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
+			}
+
+			function formatMoney(n) {
+				return `₹${Number(n).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+			}
+
+			function renderTxRows(transactions) {
+				if (!transactions.length) return `<tr><td colspan="6">No transactions yet.</td></tr>`;
+				return transactions
+					.map((t) => {
+						const isCredit = t.type === "credit";
+						return `
+					<tr>
+						<td>${new Date(t.created_at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}</td>
+						<td>${escapeHtml(t.type)}</td>
+						<td>${escapeHtml(t.description)}</td>
+						<td class="amount ${isCredit ? "credit" : "debit"}">${isCredit ? "+" : "-"}${formatMoney(t.amount)}</td>
+						<td>${formatMoney(t.balance_after)}</td>
+						<td>
+							<button class="copy-id" type="button" data-id="${t.id}" title="Copy transaction ID">
+								<code class="inline">${t.id.slice(0, 8)}…</code>
+								<span class="copy-feedback">Copied!</span>
+							</button>
+						</td>
+					</tr>`;
+					})
+					.join("");
+			}
+
+			async function loadAccountView(id, { own = false } = {}) {
+				const viewSection = document.getElementById("viewSection");
+				const [accountRes, txRes] = await Promise.all([fetch(`/bank/account/${encodeURIComponent(id)}`), fetch(`/bank/account/${encodeURIComponent(id)}/transactions`)]);
+				const account = await accountRes.json();
+				const txData = await txRes.json();
+				if (!accountRes.ok) {
+					viewSection.innerHTML = `<p>${escapeHtml(account.error || "Account not found.")}</p>`;
+					viewSection.style.display = "block";
+					return;
+				}
+				document.getElementById("viewAvatar").src = account.avatar || "/images/mukesh.png";
+				document.getElementById("viewHolderName").textContent = account.holder_name;
+				document.getElementById("viewBranch").textContent = account.branch ? `${account.branch.name} (${account.branch.ifsc})` : "";
+				document.getElementById("viewAccountId").textContent = account.account_id;
+				document.getElementById("viewBalance").textContent = formatMoney(account.balance);
+				document.getElementById("viewTxRows").innerHTML = renderTxRows(txData.transactions ?? []);
+				if (!own) {
+					document.getElementById("pageTitle").textContent = "Account Details";
+					document.getElementById("pageSubtitle").textContent = "Viewing a public account from the leaderboard.";
+				}
+				viewSection.style.display = "block";
+			}
+
+			const viewedAccountId = new URLSearchParams(location.search).get("id");
+			const authSectionEl = document.getElementById("authSection");
+
+			const signedOutEl = document.getElementById("signedOut");
+			const signedInEl = document.getElementById("signedIn");
+			const openAccountSection = document.getElementById("openAccountSection");
+			const authResultEl = document.getElementById("authResult");
+
+			function showSignedIn(user) {
+				signedOutEl.style.display = "none";
+				signedInEl.style.display = "flex";
+				openAccountSection.style.display = "block";
+				document.getElementById("whoamiName").textContent = user.name;
+				const img = document.getElementById("whoamiImg");
+				img.src = user.image || "/images/mukesh.png";
+				img.alt = user.name;
+			}
+
+			function showSignedOut() {
+				signedOutEl.style.display = "block";
+				signedInEl.style.display = "none";
+				openAccountSection.style.display = "none";
+			}
+
+			if (viewedAccountId) {
+				// Just viewing a public account from the leaderboard - no need to
+				// prompt sign-in/sign-up here.
+				loadAccountView(viewedAccountId);
+				authSectionEl.style.display = "none";
+			} else {
+				fetch("/api/auth/get-session")
+					.then((r) => r.json())
+					.then((data) => (data && data.user ? showSignedIn(data.user) : showSignedOut()))
+					.catch(() => showSignedOut());
+			}
+
+			const tabSignIn = document.getElementById("tabSignIn");
+			const tabSignUp = document.getElementById("tabSignUp");
+			const signInForm = document.getElementById("signInForm");
+			const signUpForm = document.getElementById("signUpForm");
+			tabSignIn.addEventListener("click", () => {
+				tabSignIn.classList.add("active");
+				tabSignUp.classList.remove("active");
+				signInForm.style.display = "grid";
+				signUpForm.style.display = "none";
+			});
+			tabSignUp.addEventListener("click", () => {
+				tabSignUp.classList.add("active");
+				tabSignIn.classList.remove("active");
+				signUpForm.style.display = "grid";
+				signInForm.style.display = "none";
+			});
+
+			document.getElementById("signUpBtn").addEventListener("click", async () => {
+				const res = await fetch("/api/auth/sign-up/email", {
+					method: "POST",
+					headers: { "content-type": "application/json" },
+					body: JSON.stringify({
+						name: document.getElementById("suName").value || "Anonymous",
+						email: document.getElementById("suEmail").value,
+						password: document.getElementById("suPassword").value,
+						image: document.getElementById("suImage").value || undefined,
+					}),
+				});
+				const data = await res.json();
+				if (!res.ok) {
+					authResultEl.innerHTML = `<pre>${escapeHtml(JSON.stringify(data, null, 2))}</pre>`;
+					return;
+				}
+				showSignedIn(data.user);
+			});
+
+			document.getElementById("signInBtn").addEventListener("click", async () => {
+				const res = await fetch("/api/auth/sign-in/email", {
+					method: "POST",
+					headers: { "content-type": "application/json" },
+					body: JSON.stringify({
+						email: document.getElementById("siEmail").value,
+						password: document.getElementById("siPassword").value,
+					}),
+				});
+				const data = await res.json();
+				if (!res.ok) {
+					authResultEl.innerHTML = `<pre>${escapeHtml(JSON.stringify(data, null, 2))}</pre>`;
+					return;
+				}
+				showSignedIn(data.user);
+			});
+
+			document.getElementById("signOutBtn").addEventListener("click", async () => {
+				await fetch("/api/auth/sign-out", { method: "POST" });
+				showSignedOut();
+			});
+
+			const branchEl = document.getElementById("branch");
+			fetch("/bank/branches")
+				.then((r) => r.json())
+				.then((data) => {
+					branchEl.innerHTML = (data.branches ?? []).map((b) => `<option value="${b.code}">${b.name}</option>`).join("");
+				})
+				.catch(() => {});
+
+			const createBtn = document.getElementById("createBtn");
+			const resultEl = document.getElementById("result");
+			const actionsEl = document.getElementById("actions");
+			const txResultEl = document.getElementById("txResult");
+			let accountId = null;
+
+			createBtn.addEventListener("click", async () => {
+				stopTicking();
+				createBtn.disabled = true;
+				createBtn.textContent = "Opening…";
+				resultEl.innerHTML = "";
+				try {
+					const res = await fetch("/bank/account", {
+						method: "POST",
+						headers: { "content-type": "application/json" },
+						body: JSON.stringify({
+							branch_code: branchEl.value,
+							opening_balance: Number(document.getElementById("openingBalance").value) || 0,
+						}),
+					});
+					const data = await res.json();
+					if (!res.ok) {
+						resultEl.innerHTML = `<pre>${res.status}\n${escapeHtml(JSON.stringify(data, null, 2))}</pre>`;
+						return;
+					}
+					accountId = data.account_id;
+					resultEl.innerHTML = "";
+					actionsEl.style.display = "flex";
+					await loadAccountView(accountId, { own: true });
+				} catch (e) {
+					resultEl.innerHTML = `<pre>${escapeHtml(String(e))}</pre>`;
+				} finally {
+					createBtn.disabled = false;
+					createBtn.textContent = "Open Account";
+				}
+			});
+
+			async function postAccountAction(path, body) {
+				if (!accountId) return;
+				const res = await fetch(`/bank/account/${accountId}/${path}`, {
+					method: "POST",
+					headers: { "content-type": "application/json" },
+					body: JSON.stringify(body),
+				});
+				const data = await res.json();
+				if (!res.ok) {
+					txResultEl.innerHTML = `<pre>${escapeHtml(JSON.stringify(data, null, 2))}</pre>`;
+					return;
+				}
+				txResultEl.innerHTML = "";
+				await loadAccountView(accountId, { own: true });
+			}
+
+			document.getElementById("creditBtn").addEventListener("click", () =>
+				postAccountAction("credit", { amount: Number(document.getElementById("amount").value) || 0, description: "Manual credit" }),
+			);
+			document.getElementById("debitBtn").addEventListener("click", () =>
+				postAccountAction("debit", { amount: Number(document.getElementById("amount").value) || 0, description: "Manual debit" }),
+			);
+			document.getElementById("subscribeBtn").addEventListener("click", () =>
+				postAccountAction("subscribe", {
+					company_name: document.getElementById("companyName").value || "Dummy Company",
+					charge_amount: Number(document.getElementById("chargeAmount").value) || 1,
+				}),
+			);
+			// Live ticking: the browser calls /tick on an interval for up to 10
+			// minutes. The server rate-limits /tick to 6/minute per account
+			// regardless of this loop, so this can never be hammered into real
+			// Cloudflare usage even if something misbehaves client-side.
+			const tickBtn = document.getElementById("tickBtn");
+			let tickTimer = null;
+			let tickStopTimeout = null;
+
+			function stopTicking() {
+				if (tickTimer) clearInterval(tickTimer);
+				if (tickStopTimeout) clearTimeout(tickStopTimeout);
+				tickTimer = null;
+				tickStopTimeout = null;
+				tickBtn.textContent = "Start Live Ticking (10 min)";
+			}
+
+			async function doTick() {
+				if (!accountId) return;
+				const res = await fetch(`/bank/account/${accountId}/tick`, { method: "POST", headers: { "content-type": "application/json" }, body: "{}" });
+				if (res.ok) {
+					await loadAccountView(accountId, { own: true });
+				} else if (res.status === 429) {
+					stopTicking(); // backend guardrail tripped - stop the client loop too
+				}
+			}
+
+			tickBtn.addEventListener("click", () => {
+				if (tickTimer) {
+					stopTicking();
+					return;
+				}
+				tickBtn.textContent = "Stop Ticking";
+				doTick();
+				tickTimer = setInterval(doTick, 20_000); // well under the server's 6/min cap
+				tickStopTimeout = setTimeout(stopTicking, 10 * 60 * 1000);
+			});
+
+			window.addEventListener("beforeunload", stopTicking);
+
+			document.getElementById("viewTxRows").addEventListener("click", (e) => {
+				const btn = e.target.closest(".copy-id");
+				if (!btn) return;
+				navigator.clipboard.writeText(btn.dataset.id).then(() => {
+					btn.classList.add("copied");
+					setTimeout(() => btn.classList.remove("copied"), 1200);
+				});
+			});
+		</script>
+	</body>
+</html>

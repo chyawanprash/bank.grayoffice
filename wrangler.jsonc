@@ -1,0 +1,45 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "financial-data-generator",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-10-08",
+	"compatibility_flags": ["nodejs_compat"],
+	"upload_source_maps": true,
+	"observability": {
+		"enabled": true
+	},
+	"assets": {
+		"directory": "./public"
+	},
+	/**
+	 * KV namespace used to store generated documents/scenario bundles so they
+	 * can be retrieved later via GET /document/:id and GET /scenario/:id.
+	 * Run `wrangler kv namespace create DOCS` and paste the id below.
+	 */
+	"kv_namespaces": [
+		{
+			"binding": "DOCS",
+			"id": "10a7097850a34ac1a2473a4c9e3d2abd"
+		}
+	],
+	/**
+	 * D1 database for the "Bank of Apna Nagar" dummy-bank route (/bank).
+	 * Schema lives in src/bank/schema.sql - apply with:
+	 *   wrangler d1 execute BANK_DB --file=src/bank/schema.sql [--remote]
+	 */
+	"d1_databases": [
+		{
+			"binding": "BANK_DB",
+			"database_name": "bank-of-apna-nagar",
+			"database_id": "96ff87a3-cdaf-47dc-ab17-8ab0782dd29c"
+		}
+	],
+	/** Hourly cron: dummy companies auto-debit their subscribed accounts. */
+	"triggers": {
+		"crons": ["0 * * * *"]
+	}
+}

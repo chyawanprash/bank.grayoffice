@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Synthetic Finance Data Generator</title>
+		<style>
+			:root {
+				--orange-500: #f6821f;
+				--orange-600: #e0740d;
+				--gray-50: #f9fafb;
+				--gray-100: #f3f4f6;
+				--gray-200: #e5e7eb;
+				--gray-300: #d1d5db;
+				--gray-600: #4b5563;
+				--gray-700: #374151;
+				--gray-800: #1f2937;
+				--gray-900: #111827;
+				--green-500: #22c55e;
+				--red-500: #ef4444;
+				--yellow-500: #eab308;
+				--blue-500: #3b82f6;
+			}
+
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family:
+					-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+					"Helvetica Neue", Arial, sans-serif;
+				background: var(--gray-50);
+				color: var(--gray-800);
+				line-height: 1.6;
+				min-height: 100vh;
+			}
+
+			.container {
+				max-width: 1100px;
+				margin: 0 auto;
+				padding: 2rem;
+			}
+
+			header {
+				text-align: center;
+				padding: 3rem 0;
+			}
+
+			.icon {
+				font-size: 4rem;
+				margin-bottom: 1rem;
+			}
+
+			h1 {
+				font-size: 2.5rem;
+				font-weight: 700;
+				color: var(--gray-900);
+				margin-bottom: 0.5rem;
+			}
+
+			.subtitle {
+				font-size: 1.25rem;
+				color: var(--gray-600);
+				max-width: 640px;
+				margin: 0 auto;
+			}
+
+			.badges {
+				display: flex;
+				gap: 0.5rem;
+				justify-content: center;
+				margin-top: 1.5rem;
+				flex-wrap: wrap;
+			}
+
+			.badge {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.25rem;
+				padding: 0.375rem 0.75rem;
+				background: white;
+				border: 1px solid var(--gray-200);
+				border-radius: 9999px;
+				font-size: 0.875rem;
+				color: var(--gray-700);
+			}
+
+			.section {
+				background: white;
+				border-radius: 1rem;
+				padding: 2rem;
+				margin-bottom: 1.5rem;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+			}
+
+			.section h2 {
+				font-size: 1.25rem;
+				font-weight: 600;
+				color: var(--gray-900);
+				margin-bottom: 1rem;
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			.section h2 .num {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				width: 1.75rem;
+				height: 1.75rem;
+				background: var(--orange-500);
+				color: white;
+				border-radius: 50%;
+				font-size: 0.875rem;
+			}
+
+			.features {
+				display: grid;
+				grid-template-columns: repeat(4, 1fr);
+				gap: 1rem;
+			}
+
+			@media (max-width: 900px) {
+				.features {
+					grid-template-columns: repeat(2, 1fr);
+				}
+			}
+
+			@media (max-width: 500px) {
+				.features {
+					grid-template-columns: 1fr;
+				}
+			}
+
+			.feature {
+				display: flex;
+				align-items: flex-start;
+				gap: 0.75rem;
+				padding: 1rem;
+				background: var(--gray-50);
+				border-radius: 0.5rem;
+			}
+
+			.feature-icon {
+				font-size: 1.5rem;
+				flex-shrink: 0;
+			}
+
+			.feature h3 {
+				font-size: 0.9375rem;
+				font-weight: 600;
+				color: var(--gray-800);
+				margin-bottom: 0.25rem;
+			}
+
+			.feature p {
+				font-size: 0.875rem;
+				color: var(--gray-600);
+			}
+
+			.architecture {
+				background: var(--gray-900);
+				border-radius: 0.5rem;
+				padding: 1.5rem;
+				overflow-x: auto;
+			}
+
+			.architecture pre {
+				color: var(--gray-100);
+				font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+				font-size: 0.8125rem;
+				line-height: 1.5;
+				margin: 0;
+			}
+
+			.events-table {
+				width: 100%;
+				border-collapse: collapse;
+			}
+
+			.events-table th,
+			.events-table td {
+				padding: 0.75rem 1rem;
+				text-align: left;
+				border-bottom: 1px solid var(--gray-200);
+			}
+
+			.events-table th {
+				font-weight: 600;
+				color: var(--gray-700);
+				font-size: 0.875rem;
+			}
+
+			.events-table td {
+				font-size: 0.9375rem;
+			}
+
+			.events-table tr:last-child td {
+				border-bottom: none;
+			}
+
+			.event-icon {
+				font-size: 1.25rem;
+			}
+
+			.links {
+				display: flex;
+				gap: 1rem;
+				flex-wrap: wrap;
+			}
+
+			.link {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.75rem 1.25rem;
+				background: var(--gray-100);
+				color: var(--gray-700);
+				text-decoration: none;
+				border-radius: 0.5rem;
+				font-weight: 500;
+				font-size: 0.9375rem;
+				transition:
+					background 0.15s,
+					color 0.15s;
+			}
+
+			.link:hover {
+				background: var(--gray-200);
+				color: var(--gray-900);
+			}
+
+			.link.primary {
+				background: var(--orange-500);
+				color: white;
+			}
+
+			.link.primary:hover {
+				background: var(--orange-600);
+				color: white;
+			}
+
+			footer {
+				text-align: center;
+				padding: 2rem;
+				color: var(--gray-500);
+				font-size: 0.875rem;
+			}
+
+			footer a {
+				color: var(--orange-500);
+				text-decoration: none;
+			}
+
+			footer a:hover {
+				text-decoration: underline;
+			}
+
+			.try-it {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 1rem;
+			}
+
+			@media (max-width: 700px) {
+				.try-it {
+					grid-template-columns: 1fr;
+				}
+			}
+
+			.field {
+				display: flex;
+				flex-direction: column;
+				gap: 0.25rem;
+			}
+
+			.field label {
+				font-size: 0.8125rem;
+				font-weight: 600;
+				color: var(--gray-700);
+			}
+
+			.field select,
+			.field input {
+				padding: 0.5rem 0.75rem;
+				border: 1px solid var(--gray-300);
+				border-radius: 0.5rem;
+				font-size: 0.9375rem;
+				background: white;
+			}
+
+			.try-it .full-width {
+				grid-column: 1 / -1;
+			}
+
+			button.run {
+				grid-column: 1 / -1;
+				padding: 0.75rem 1.25rem;
+				background: var(--orange-500);
+				color: white;
+				border: none;
+				border-radius: 0.5rem;
+				font-weight: 600;
+				font-size: 0.9375rem;
+				cursor: pointer;
+			}
+
+			button.run:hover {
+				background: var(--orange-600);
+			}
+
+			button.run:disabled {
+				background: var(--gray-300);
+				cursor: not-allowed;
+			}
+
+			#result {
+				margin-top: 1rem;
+				grid-column: 1 / -1;
+			}
+
+			#result pre {
+				background: var(--gray-900);
+				color: var(--gray-100);
+				padding: 1rem;
+				border-radius: 0.5rem;
+				overflow-x: auto;
+				font-size: 0.8125rem;
+				max-height: 360px;
+			}
+
+			.result-links {
+				display: flex;
+				gap: 0.5rem;
+				flex-wrap: wrap;
+				margin-top: 0.5rem;
+			}
+
+			code.inline {
+				background: var(--gray-100);
+				padding: 0.125rem 0.375rem;
+				border-radius: 0.25rem;
+				font-size: 0.85em;
+			}
+
+			.topnav {
+				position: sticky;
+				top: 0;
+				z-index: 50;
+				background: white;
+				border-bottom: 1px solid var(--gray-200);
+			}
+
+			.topnav-inner {
+				max-width: 1100px;
+				margin: 0 auto;
+				padding: 0.875rem 2rem;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 1rem;
+				flex-wrap: wrap;
+			}
+
+			.topnav-brand {
+				font-weight: 700;
+				color: var(--gray-900);
+				text-decoration: none;
+				font-size: 1.0625rem;
+			}
+
+			.topnav-links {
+				display: flex;
+				gap: 1.25rem;
+				flex-wrap: wrap;
+			}
+
+			.topnav-links a {
+				color: var(--gray-600);
+				text-decoration: none;
+				font-size: 0.9375rem;
+				font-weight: 500;
+			}
+
+			.topnav-links a:hover,
+			.topnav-links a.active {
+				color: var(--orange-500);
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="topnav">
+			<div class="topnav-inner">
+				<a href="/generator" class="topnav-brand">Synthetic Finance Data Generator</a>
+				<div class="topnav-links">
+					<a href="/">Bank Home</a>
+					<a href="/staff">Branches &amp; Staff</a>
+					<a href="/account">Account</a>
+					<a href="/leaderboard">Leaderboard</a>
+					<a href="/docs">API Docs</a>
+					<a href="/generator" class="active">Generator</a>
+				</div>
+			</div>
+		</nav>
+
+		<div class="container">
+			<header>
+				<h1>Synthetic Finance Data Generator</h1>
+				<p class="subtitle">
+					A synthetic finance-document factory for testing AI
+					finance-operations agents: invoices, purchase orders, GRNs, bank
+					and credit-card statements, receipts, tax docs, emails and Slack
+					events — driven by a scenario engine with deliberate,
+					ground-truth-labeled mutations.
+				</p>
+				<div class="badges">
+					<span class="badge">Workers</span>
+					<span class="badge">KV</span>
+					<span class="badge">India GST</span>
+					<span class="badge">US Tax</span>
+					<span class="badge">Synthetic Only</span>
+				</div>
+			</header>
+
+			<section class="section">
+				<h2>Features</h2>
+				<div class="features">
+					<div class="feature">
+						<div>
+							<h3>25+ Document Types</h3>
+							<p>GST/US invoices, credit notes, POs, GRNs, statements, 1099s, W-9s</p>
+						</div>
+					</div>
+					<div class="feature">
+						<div>
+							<h3>Scenario Engine</h3>
+							<p>25 benchmark scenarios with machine-readable expected outcomes</p>
+						</div>
+					</div>
+					<div class="feature">
+						<div>
+							<h3>Deliberate Mutations</h3>
+							<p>Identity, tax, matching, bank and document-quality corruptions</p>
+						</div>
+					</div>
+					<div class="feature">
+						<div>
+							<h3>Email + Slack</h3>
+							<p>Realistic .eml messages and Slack events tied to each document</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="section">
+				<h2><span class="num">▶</span>Try It</h2>
+				<div class="try-it">
+					<div class="field">
+						<label for="jurisdiction">Jurisdiction</label>
+						<select id="jurisdiction">
+							<option value="IN">India (IN)</option>
+							<option value="US">United States (US)</option>
+						</select>
+					</div>
+					<div class="field">
+						<label for="documentType">Document Type</label>
+						<select id="documentType"></select>
+					</div>
+					<div class="field">
+						<label for="format">Format</label>
+						<select id="format">
+							<option value="pdf">PDF</option>
+							<option value="json">JSON</option>
+							<option value="csv">CSV</option>
+							<option value="xlsx">XLSX</option>
+							<option value="png">PNG</option>
+							<option value="txt">TXT</option>
+							<option value="eml">EML (email)</option>
+						</select>
+					</div>
+					<div class="field" id="orientationField">
+						<label for="orientation">PDF Orientation</label>
+						<select id="orientation">
+							<option value="auto">Auto (landscape for wide tables)</option>
+							<option value="portrait">Vertical (portrait)</option>
+							<option value="landscape">Horizontal (landscape)</option>
+						</select>
+					</div>
+					<div class="field">
+						<label for="quantity">Quantity</label>
+						<input id="quantity" type="number" min="1" max="50" value="1" />
+					</div>
+					<div class="field">
+						<label for="seed">Seed (optional)</label>
+						<input id="seed" type="number" placeholder="e.g. 12345" />
+					</div>
+					<button class="run" id="runBtn">Generate Document</button>
+					<div id="result"></div>
+				</div>
+			</section>
+
+			<section class="section">
+				<h2><span class="num">1</span>How It Works</h2>
+				<div class="architecture">
+					<pre>
+Scenario Registry
+   -> Synthetic Data Generator (seeded RNG, IN/US)
+   -> Mutation Library (identity / tax / matching / bank / document)
+   -> Validation Engine (arithmetic, tax, 3-way match)
+   -> Document Renderer (PDF / PNG / CSV / XLSX / JSON / EML / TXT)
+   -> API Layer (/generate, /generate/batch, /scenario, /document/:id)
+   -> Ground truth: expected_exceptions, expected_actions,
+      human_approval_required, dangerous_actions_that_must_not_be_automatic
+          </pre>
+				</div>
+			</section>
+
+			<section class="section">
+				<h2><span class="num">2</span>API Endpoints</h2>
+				<table class="events-table">
+					<thead>
+						<tr>
+							<th>Endpoint</th>
+							<th>Purpose</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><code class="inline">POST /generate</code></td>
+							<td>Generate a single document in any export format</td>
+						</tr>
+						<tr>
+							<td><code class="inline">POST /generate/batch</code></td>
+							<td>Generate many documents/scenario runs at once (max 200)</td>
+						</tr>
+						<tr>
+							<td><code class="inline">POST /scenario</code></td>
+							<td>Run a named scenario end-to-end and get the full ground-truth bundle</td>
+						</tr>
+						<tr>
+							<td><code class="inline">GET /scenario</code></td>
+							<td>List all available scenarios</td>
+						</tr>
+						<tr>
+							<td><code class="inline">GET /scenario/:run_id</code></td>
+							<td>Retrieve a previously run scenario bundle</td>
+						</tr>
+						<tr>
+							<td><code class="inline">GET /document/:test_id?format=pdf</code></td>
+							<td>Retrieve/re-render a previously generated document</td>
+						</tr>
+						<tr>
+							<td><code class="inline">GET /health</code></td>
+							<td>Health check</td>
+						</tr>
+					</tbody>
+				</table>
+				<p style="margin-top: 1rem; font-size: 0.875rem; color: var(--gray-600)">
+					<strong>Note:</strong> Every generated artifact carries a visible
+					<code class="inline">DUMMY / SYNTHETIC TEST DOCUMENT</code> marker
+					and <code class="inline">synthetic: true</code> metadata. Nothing
+					produced here is a real financial record.
+				</p>
+			</section>
+
+			<section class="section">
+				<h2><span class="num">3</span>Documentation</h2>
+				<div class="links">
+					<a href="/scenario" class="link primary">List Scenarios (GET)</a>
+					<a href="/health" class="link">Health Check</a>
+					<a
+						href="https://developers.cloudflare.com/workers/"
+						class="link"
+					>
+						Cloudflare Workers
+					</a>
+				</div>
+			</section>
+
+			<footer>
+				Built with
+				<a href="https://workers.cloudflare.com">Cloudflare Workers</a> ·
+				All data is synthetic and generated at request time. ·
+				<a href="/">Bank of Apna Nagar (dummy bank simulator)</a>
+			</footer>
+		</div>
+
+		<script>
+			const runBtn = document.getElementById("runBtn");
+			const resultEl = document.getElementById("result");
+			const jurisdictionEl = document.getElementById("jurisdiction");
+			const documentTypeEl = document.getElementById("documentType");
+
+			const MAX_QUANTITY = 50; // matches the server's zip-bundle cap (rendering, esp. PDF, is CPU-bound)
+
+			const DOCUMENT_TYPES = {
+				IN: [
+					["gst_invoice", "GST Invoice"],
+					["b2c_invoice", "B2C Invoice"],
+					["interstate_invoice", "Interstate Invoice (IGST)"],
+					["intrastate_invoice", "Intrastate Invoice (CGST+SGST)"],
+					["export_invoice", "Export Invoice"],
+					["sez_invoice", "SEZ Invoice"],
+					["reverse_charge_invoice", "Reverse Charge Invoice"],
+					["bill_of_supply", "Bill of Supply"],
+					["invoice_cum_bill_of_supply", "Invoice-cum-Bill of Supply"],
+					["credit_note", "Credit Note"],
+					["debit_note", "Debit Note"],
+					["purchase_order", "Purchase Order"],
+					["grn", "Goods Receipt Note (GRN)"],
+					["bank_statement", "Bank Statement"],
+					["credit_card_statement", "Credit Card Statement"],
+					["expense_receipt", "Expense Receipt"],
+					["vendor_master", "Vendor Master"],
+					["gst_reconciliation_report", "GST Reconciliation Report"],
+					["gstr1_report", "GSTR-1-like Report"],
+					["gstr2b_report", "GSTR-2B-like Report"],
+					["tds_report", "TDS Report"],
+					["journal_entry", "Journal Entry"],
+					["reconciliation_report", "Reconciliation Report"],
+				],
+				US: [
+					["commercial_invoice", "Commercial Invoice"],
+					["service_invoice", "Service Invoice"],
+					["recurring_invoice", "Recurring Invoice"],
+					["subscription_invoice", "Subscription Invoice"],
+					["purchase_invoice", "Purchase Invoice"],
+					["credit_memo", "Credit Memo"],
+					["debit_memo", "Debit Memo"],
+					["purchase_order", "Purchase Order"],
+					["receiving_report", "Receiving Report"],
+					["bank_statement", "Bank Statement"],
+					["credit_card_statement", "Credit Card Statement"],
+					["expense_receipt", "Expense Receipt"],
+					["w9", "W-9"],
+					["1099_nec", "1099-NEC"],
+					["1099_misc", "1099-MISC"],
+					["journal_entry", "Journal Entry"],
+					["reconciliation_report", "Reconciliation Report"],
+				],
+			};
+
+			function populateDocumentTypes() {
+				const jurisdiction = jurisdictionEl.value;
+				const previous = documentTypeEl.value;
+				documentTypeEl.innerHTML = DOCUMENT_TYPES[jurisdiction]
+					.map(([value, label]) => `<option value="${value}">${label}</option>`)
+					.join("");
+				// Keep the same document type selected across the switch when both
+				// jurisdictions support it (e.g. purchase_order, bank_statement).
+				const stillValid = DOCUMENT_TYPES[jurisdiction].some(([value]) => value === previous);
+				if (stillValid) documentTypeEl.value = previous;
+			}
+
+			jurisdictionEl.addEventListener("change", populateDocumentTypes);
+			populateDocumentTypes();
+
+			const formatEl = document.getElementById("format");
+			const orientationField = document.getElementById("orientationField");
+			function toggleOrientationField() {
+				orientationField.style.display = formatEl.value === "pdf" || formatEl.value === "eml" ? "" : "none";
+			}
+			formatEl.addEventListener("change", toggleOrientationField);
+			toggleOrientationField();
+
+			runBtn.addEventListener("click", async () => {
+				const jurisdiction = document.getElementById("jurisdiction").value;
+				const document_type = document.getElementById("documentType").value;
+				const format = document.getElementById("format").value;
+				const orientation = document.getElementById("orientation").value;
+				const seedInput = document.getElementById("seed").value;
+				let quantity = Number(document.getElementById("quantity").value) || 1;
+				quantity = Math.max(1, Math.min(MAX_QUANTITY, Math.round(quantity)));
+				document.getElementById("quantity").value = quantity;
+
+				runBtn.disabled = true;
+				runBtn.textContent = quantity > 1 ? `Generating ${quantity}…` : "Generating…";
+				resultEl.innerHTML = "";
+
+				try {
+					const res =
+						quantity > 1
+							? await fetch("/generate/batch", {
+									method: "POST",
+									headers: { "content-type": "application/json" },
+									body: JSON.stringify({
+										jurisdiction,
+										document_type,
+										scenario: "clean",
+										count: quantity,
+										formats: [format],
+										bundle: true,
+										orientation,
+										...(seedInput ? { seed: Number(seedInput) } : {}),
+									}),
+								})
+							: await fetch("/generate", {
+									method: "POST",
+									headers: { "content-type": "application/json" },
+									body: JSON.stringify({
+										jurisdiction,
+										document_type,
+										format,
+										scenario: "clean",
+										orientation,
+										...(seedInput ? { seed: Number(seedInput) } : {}),
+									}),
+								});
+
+					if (!res.ok) {
+						const err = await res.json().catch(() => ({}));
+						resultEl.innerHTML = `<pre>${res.status} ${res.statusText}\n${JSON.stringify(err, null, 2)}</pre>`;
+						return;
+					}
+
+					if (quantity > 1) {
+						const fileCount = res.headers.get("x-file-count") ?? String(quantity);
+						const blob = await res.blob();
+						const url = URL.createObjectURL(blob);
+						resultEl.innerHTML = `<p><strong>${fileCount} documents</strong> bundled into one .zip</p><div class="result-links"><a class="link primary" href="${url}" download="batch-${document_type}.zip">Download ZIP</a></div>`;
+						return;
+					}
+
+					const testId = res.headers.get("x-test-id") ?? "unknown";
+					const contentType = res.headers.get("content-type") ?? "";
+
+					if (contentType.includes("json") || contentType.includes("text")) {
+						const text = await res.text();
+						resultEl.innerHTML = `<p><strong>test_id:</strong> ${testId}</p><pre>${escapeHtml(text.slice(0, 8000))}</pre>`;
+					} else {
+						const blob = await res.blob();
+						const url = URL.createObjectURL(blob);
+						resultEl.innerHTML = `<p><strong>test_id:</strong> ${testId}</p><div class="result-links"><a class="link primary" href="${url}" target="_blank" rel="noopener">Open ${format.toUpperCase()}</a></div>`;
+					}
+				} catch (e) {
+					resultEl.innerHTML = `<pre>${escapeHtml(String(e))}</pre>`;
+				} finally {
+					runBtn.disabled = false;
+					runBtn.textContent = "Generate Document";
+				}
+			});
+
+			function escapeHtml(s) {
+				return s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
+			}
+		</script>
+	</body>
+</html>
