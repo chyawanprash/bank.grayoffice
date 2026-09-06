@@ -90,16 +90,19 @@ export async function handleLeaderboard(env: Env): Promise<Response> {
 		 ORDER BY a.balance_cents DESC LIMIT 100`,
 	).all<{ account_id: string; holder_name: string; avatar: string | null; balance_cents: number; branch_code: string; branch_name: string; transaction_count: number }>();
 
+	const sinceIso = new Date(Date.now() - 60_000).toISOString();
 	const totals = await env.BANK_DB.prepare(
 		`SELECT (SELECT COALESCE(SUM(balance_cents), 0) FROM accounts) AS economy_cents,
 			(SELECT COUNT(*) FROM accounts) AS account_count,
-			(SELECT COUNT(*) FROM transactions) AS transaction_count`,
-	).first<{ economy_cents: number; account_count: number; transaction_count: number }>();
+			(SELECT COUNT(*) FROM transactions) AS transaction_count,
+			(SELECT COUNT(*) FROM transactions WHERE created_at >= ?1) AS last_minute_count`,
+	).bind(sinceIso).first<{ economy_cents: number; account_count: number; transaction_count: number; last_minute_count: number }>();
 
 	return json({
 		total_economy: (totals?.economy_cents ?? 0) / 100,
 		total_accounts: totals?.account_count ?? 0,
 		total_transactions: totals?.transaction_count ?? 0,
+		transactions_per_minute: totals?.last_minute_count ?? 0,
 		leaderboard: results.map((r) => ({
 			account_id: r.account_id,
 			holder_name: r.holder_name,

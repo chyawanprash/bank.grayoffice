@@ -247,6 +247,11 @@
 					<div style="font-size:0.8rem;opacity:0.7">Total Accounts</div>
 					<div id="totalAccounts" style="font-size:1.5rem;font-weight:700">—</div>
 				</div>
+				<div style="flex:1;min-width:160px;border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:1rem">
+					<div style="font-size:0.8rem;opacity:0.7">Transactions / min</div>
+					<div id="txPerMin" style="font-size:1.5rem;font-weight:700">—</div>
+					<div style="font-size:0.7rem;opacity:0.55;margin-top:0.25rem">~1,000/min triggered by just 2 accounts in a load test — not a ceiling</div>
+				</div>
 			</section>
 
 			<section class="section">
@@ -284,6 +289,7 @@
 						"₹" + (data.total_economy ?? 0).toLocaleString("en-IN", { minimumFractionDigits: 2 });
 					document.getElementById("totalTxns").textContent = (data.total_transactions ?? 0).toLocaleString("en-IN");
 					document.getElementById("totalAccounts").textContent = (data.total_accounts ?? 0).toLocaleString("en-IN");
+					document.getElementById("txPerMin").textContent = (data.transactions_per_minute ?? 0).toLocaleString("en-IN");
 					const rows = data.leaderboard ?? [];
 					document.getElementById("rows").innerHTML = rows.length
 						? rows
