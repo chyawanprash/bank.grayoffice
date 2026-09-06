@@ -302,7 +302,7 @@ Account Creation (rate-limited, 5/min/IP)
 						</tr>
 						<tr>
 							<td><code class="inline">GET /bank/leaderboard</code></td>
-							<td>Public leaderboard of every account: holder, avatar, balance, branch, transaction count</td>
+							<td>Public leaderboard of every account plus bank-wide totals (economy, transaction count, account count)</td>
 						</tr>
 						<tr>
 							<td><code class="inline">POST /api/auth/sign-up/email</code></td>
@@ -326,15 +326,19 @@ Account Creation (rate-limited, 5/min/IP)
 						</tr>
 						<tr>
 							<td><code class="inline">POST /bank/account/:id/credit</code></td>
-							<td>Credit an amount into the account</td>
+							<td>Credit an amount into the account (owner only)</td>
 						</tr>
 						<tr>
 							<td><code class="inline">POST /bank/account/:id/debit</code></td>
-							<td>Debit an amount from the account (rejected if insufficient balance)</td>
+							<td>Debit an amount from the account (owner only; rejected if insufficient balance)</td>
 						</tr>
 						<tr>
 							<td><code class="inline">POST /bank/account/:id/subscribe</code></td>
-							<td>Register a dummy company that auto-charges this account every hour</td>
+							<td>Register a dummy company that auto-charges this account every hour (owner only)</td>
+						</tr>
+						<tr>
+							<td><code class="inline">POST /bank/account/:id/transfer</code></td>
+							<td>Send money via NEFT / IMPS / UPI / wire (owner only; internal APNA destinations are credited instantly)</td>
 						</tr>
 						<tr>
 							<td><code class="inline">POST /bank/account/:id/tick</code></td>

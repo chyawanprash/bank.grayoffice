@@ -27,6 +27,7 @@ import {
 	handleListTransactions,
 	handleCredit,
 	handleDebit,
+	handleTransfer,
 	handleSubscribe,
 	handleTick,
 	runHourlyCharges,
@@ -85,6 +86,9 @@ export default {
 
 			const debitMatch = path.match(/^\/bank\/account\/([^/]+)\/debit$/);
 			if (debitMatch && request.method === "POST") return withCors(await handleDebit(decodeURIComponent(debitMatch[1]), request, env));
+
+			const transferMatch = path.match(/^\/bank\/account\/([^/]+)\/transfer$/);
+			if (transferMatch && request.method === "POST") return withCors(await handleTransfer(decodeURIComponent(transferMatch[1]), request, env));
 
 			const subscribeMatch = path.match(/^\/bank\/account\/([^/]+)\/subscribe$/);
 			if (subscribeMatch && request.method === "POST") return withCors(await handleSubscribe(decodeURIComponent(subscribeMatch[1]), request, env));
