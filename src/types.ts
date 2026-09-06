@@ -522,6 +522,21 @@ export type AnyDocument =
 
 export const PdfOrientationSchema = z.enum(["auto", "portrait", "landscape"]);
 
+/** Override one party of an IN invoice with a real company ("we are the seller / buyer"). */
+export const SelfPartySchema = z.object({
+	role: z.enum(["supplier", "customer"]),
+	legal_name: z.string().min(1).max(160),
+	trade_name: z.string().max(160).optional(),
+	gstin: z.string().max(20).optional(),
+	state: z.string().max(60).optional(),
+	state_code: z.string().max(4).optional(),
+	city: z.string().max(80).optional(),
+	address: z.string().max(240).optional(),
+	postal_code: z.string().max(12).optional(),
+	email: z.string().max(120).optional(),
+	phone: z.string().max(24).optional(),
+});
+
 export const GenerateRequestSchema = z.object({
 	jurisdiction: Jurisdiction,
 	document_type: DocumentType,
@@ -531,22 +546,7 @@ export const GenerateRequestSchema = z.object({
 	scenario: z.string().optional().default("clean"),
 	seed: z.number().int().optional(),
 	format: z.enum(["pdf", "png", "csv", "xlsx", "json", "eml", "txt"]).optional().default("json"),
-	/** Override one party with a real company so an agent can test "we are the seller / buyer". IN invoice family only. */
-	self: z
-		.object({
-			role: z.enum(["supplier", "customer"]),
-			legal_name: z.string().min(1).max(160),
-			trade_name: z.string().max(160).optional(),
-			gstin: z.string().max(20).optional(),
-			state: z.string().max(60).optional(),
-			state_code: z.string().max(4).optional(),
-			city: z.string().max(80).optional(),
-			address: z.string().max(240).optional(),
-			postal_code: z.string().max(12).optional(),
-			email: z.string().max(120).optional(),
-			phone: z.string().max(24).optional(),
-		})
-		.optional(),
+	self: SelfPartySchema.optional(),
 });
 export type GenerateRequest = z.infer<typeof GenerateRequestSchema>;
 
@@ -561,6 +561,8 @@ export const BatchRequestSchema = z.object({
 	seed: z.number().int().optional(),
 	/** When true, returns one .zip containing every rendered document instead of just a JSON summary. */
 	bundle: z.boolean().optional().default(false),
+	/** Same party on every invoice in the batch (non-scenario, IN invoice family). */
+	self: SelfPartySchema.optional(),
 });
 export type BatchRequest = z.infer<typeof BatchRequestSchema>;
 

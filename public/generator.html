@@ -498,6 +498,18 @@
 						<label for="seed">Seed (optional)</label>
 						<input id="seed" type="number" placeholder="e.g. 12345" />
 					</div>
+					<div class="field">
+						<label for="selfName">Company on the invoice (IN invoices)</label>
+						<input id="selfName" type="text" placeholder="e.g. Acme Traders Pvt Ltd" />
+					</div>
+					<div class="field">
+						<label for="selfRole">That company is the…</label>
+						<select id="selfRole">
+							<option value="">— synthetic (random both sides) —</option>
+							<option value="supplier">Seller — it issues the GST invoice (a sale)</option>
+							<option value="customer">Buyer — the invoice is billed to it (a purchase)</option>
+						</select>
+					</div>
 					<button class="run" id="runBtn">Generate Document</button>
 					<div id="result"></div>
 				</div>
@@ -673,6 +685,9 @@ Scenario Registry
 				const format = document.getElementById("format").value;
 				const orientation = document.getElementById("orientation").value;
 				const seedInput = document.getElementById("seed").value;
+				const selfName = document.getElementById("selfName").value.trim();
+				const selfRole = document.getElementById("selfRole").value;
+				const self = selfName && selfRole ? { role: selfRole, legal_name: selfName } : null;
 				let quantity = Number(document.getElementById("quantity").value) || 1;
 				quantity = Math.max(1, Math.min(MAX_QUANTITY, Math.round(quantity)));
 				document.getElementById("quantity").value = quantity;
@@ -696,6 +711,7 @@ Scenario Registry
 										bundle: true,
 										orientation,
 										...(seedInput ? { seed: Number(seedInput) } : {}),
+										...(self ? { self } : {}),
 									}),
 								})
 							: await fetch("/generate", {
@@ -708,6 +724,7 @@ Scenario Registry
 										scenario: "clean",
 										orientation,
 										...(seedInput ? { seed: Number(seedInput) } : {}),
+										...(self ? { self } : {}),
 									}),
 								});
 

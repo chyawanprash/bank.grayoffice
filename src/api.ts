@@ -174,6 +174,7 @@ export async function handleBatch(request: Request, env: Env): Promise<Response>
 				testId,
 				scenarioId: req.scenario,
 				seed,
+				self: req.self,
 			});
 			await storeDocument(env, doc);
 			results.push({ test_id: testId });

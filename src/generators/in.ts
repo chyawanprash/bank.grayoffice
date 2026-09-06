@@ -318,8 +318,10 @@ export function buildInvoiceIN(rng: Rng, opts: InvoiceGenOptions): Invoice {
 }
 
 export function buildCreditOrDebitNoteIN(rng: Rng, opts: InvoiceGenOptions): CreditDebitNote {
-	const supplier = synthPartyIN(rng, { withGstin: true });
-	const customer = synthPartyIN(rng, { withGstin: true });
+	let supplier = synthPartyIN(rng, { withGstin: true });
+	let customer = synthPartyIN(rng, { withGstin: true });
+	if (opts.self?.role === "supplier") supplier = applySelf(supplier, opts.self);
+	if (opts.self?.role === "customer") customer = applySelf(customer, opts.self);
 	const taxMode = supplier.state_code === customer.state_code ? "cgst_sgst" : "igst";
 	const line_items = buildLineItemsIN(rng, "goods", taxMode).map((li) => ({
 		...li,
