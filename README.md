@@ -86,6 +86,31 @@ Passing `"scenario"` on `/generate` as one of the mutation ids in
 single mutation to the generated document; `/scenario` and `/generate/batch`
 with a registered `scenario_id` run the full scenario engine instead.
 
+## Bank of Apna Nagar — programmatic access
+
+The `/bank/*` routes (a live, mutable dummy-bank simulator) accept a **bearer
+API key** as an alternative to a Better Auth session, so other services can
+drive account operations.
+
+```bash
+# Mint a key (open, rate-limited: 5/hour/IP - the bank is a synthetic sandbox)
+curl -X POST https://bank.grayoffice.app/bank/keys \
+  -H 'content-type: application/json' \
+  -d '{"email":"treasury@acme.test","name":"Acme Treasury","label":"gray-office"}'
+# -> { "key": "gobk_<id>_<secret>", "key_id": "...", "user_id": "..." }
+
+AUTH='authorization: Bearer gobk_<id>_<secret>'
+curl -H "$AUTH" https://bank.grayoffice.app/bank/me
+curl -X POST -H "$AUTH" -H 'content-type: application/json' \
+  https://bank.grayoffice.app/bank/account -d '{"branch_code":"BADRIC","opening_balance":100000}'
+curl -X POST -H "$AUTH" -H 'content-type: application/json' \
+  https://bank.grayoffice.app/bank/account/APNA.../credit -d '{"amount":2500,"description":"Refund"}'
+```
+
+The key resolves to a bank `user`; `POST /bank/account`, `credit`, `debit`,
+`transfer`, `subscribe` and `tick` all check that the key's user owns the
+account. Keys are stored as `sha256(secret)` only.
+
 ## Local development
 
 ```bash

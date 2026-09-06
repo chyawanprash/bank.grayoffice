@@ -101,6 +101,19 @@ CREATE TABLE IF NOT EXISTS transactions (
 );
 CREATE INDEX IF NOT EXISTS idx_transactions_account ON transactions(account_id);
 
+-- Programmatic access: bearer API keys, an alternative to a Better Auth
+-- session for the /bank/* mutating routes. The key secret is never stored -
+-- only sha256(secret). Minted via POST /bank/keys (see src/bank/keys.ts).
+CREATE TABLE IF NOT EXISTS api_keys (
+	id TEXT PRIMARY KEY,
+	key_hash TEXT NOT NULL UNIQUE,
+	user_id TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE,
+	label TEXT,
+	created_at TEXT NOT NULL,
+	last_used_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_api_keys_user ON api_keys(user_id);
+
 CREATE TABLE IF NOT EXISTS subscriptions (
 	id TEXT PRIMARY KEY,
 	account_id TEXT NOT NULL REFERENCES accounts(id),

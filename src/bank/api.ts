@@ -7,7 +7,58 @@
 import type { Env } from "../types";
 import { checkRateLimit } from "../api";
 import { createAuth } from "../auth";
+import { mintApiKey, resolveApiKey } from "./keys";
 import { AmountSchema, CreateAccountSchema, SubscribeSchema, TransferSchema, type Account, type Branch, type BankTxn, type Employee, type Leadership } from "./types";
+
+type BankUser = { id: string; name: string; email: string; image: string | null };
+
+/**
+ * Caller identity for the /bank/* routes: an API key (Authorization: Bearer
+ * gobk_...) if present, otherwise the Better Auth session. Single helper so
+ * both paths stay in sync.
+ */
+async function authUser(request: Request, env: Env): Promise<BankUser | null> {
+	const viaKey = await resolveApiKey(env, request);
+	if (viaKey) {
+		return env.BANK_DB.prepare("SELECT id, name, email, image FROM user WHERE id = ?").bind(viaKey.userId).first<BankUser>();
+	}
+	const auth = createAuth(env, new URL(request.url).origin);
+	const session = await auth.api.getSession({ headers: request.headers });
+	if (!session) return null;
+	return { id: session.user.id, name: session.user.name, email: session.user.email, image: session.user.image ?? null };
+}
+
+/** POST /bank/keys - mint a bearer API key for `email` (upserts the user). */
+export async function handleMintKey(request: Request, env: Env): Promise<Response> {
+	const ip = request.headers.get("cf-connecting-ip") ?? "unknown";
+	if (!(await checkRateLimit(env, ip, 5, "bank-key-mint", 3_600_000)))
+		return json({ error: "rate limit exceeded: max 5 keys per hour per IP" }, 429);
+
+	let body: { email?: string; name?: string; label?: string };
+	try {
+		body = (await request.json()) as typeof body;
+	} catch {
+		return badRequest("Invalid JSON body");
+	}
+	const email = (body.email ?? "").trim().toLowerCase();
+	if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return badRequest("Valid email is required");
+
+	const minted = await mintApiKey(env, { email, name: (body.name ?? "").trim() || email, label: body.label?.slice(0, 80) });
+	return json(minted, 201);
+}
+
+/** GET /bank/me - the caller's user + their accounts. Confirms a key works. */
+export async function handleMe(request: Request, env: Env): Promise<Response> {
+	const user = await authUser(request, env);
+	if (!user) return json({ error: "sign in or provide an API key" }, 401);
+	const { results } = await env.BANK_DB.prepare(
+		"SELECT id AS account_id, branch_code, balance_cents, created_at FROM accounts WHERE user_id = ? ORDER BY created_at",
+	).bind(user.id).all<{ account_id: string; branch_code: string; balance_cents: number; created_at: string }>();
+	return json({
+		user: { id: user.id, name: user.name, email: user.email, image: user.image },
+		accounts: results.map((a) => ({ account_id: a.account_id, branch_code: a.branch_code, balance: a.balance_cents / 100, created_at: a.created_at })),
+	});
+}
 
 /** Every employee shares this avatar - they're dummy staff with no individual identity. */
 export const EMPLOYEE_PFP = "/images/mukesh.png";
@@ -47,9 +98,8 @@ export async function handleListLeadership(env: Env): Promise<Response> {
 }
 
 export async function handleCreateAccount(request: Request, env: Env): Promise<Response> {
-	const auth = createAuth(env, new URL(request.url).origin);
-	const session = await auth.api.getSession({ headers: request.headers });
-	if (!session) return json({ error: "sign in required" }, 401);
+	const user = await authUser(request, env);
+	if (!user) return json({ error: "sign in or provide an API key" }, 401);
 
 	const ip = request.headers.get("cf-connecting-ip") ?? "unknown";
 	if (!(await checkRateLimit(env, ip, 2, "bank-account-create", 3_600_000))) return json({ error: "rate limit exceeded: max 2 accounts per hour per IP" }, 429);
@@ -70,12 +120,12 @@ export async function handleCreateAccount(request: Request, env: Env): Promise<R
 	let id = genAccountId();
 	for (let i = 0; i < 5 && (await accountExists(env, id)); i++) id = genAccountId();
 
-	const holder_name = session.user.name;
-	const avatar = session.user.image ?? null;
+	const holder_name = user.name;
+	const avatar = user.image ?? null;
 	const balance_cents = Math.round(opening_balance * 100);
 	const created_at = new Date().toISOString();
 	await env.BANK_DB.prepare("INSERT INTO accounts (id, branch_code, holder_name, avatar, user_id, balance_cents, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
-		.bind(id, branch_code, holder_name, avatar, session.user.id, balance_cents, created_at)
+		.bind(id, branch_code, holder_name, avatar, user.id, balance_cents, created_at)
 		.run();
 
 	return json({ account_id: id, branch, holder_name, avatar, balance: balance_cents / 100, created_at }, 201);
@@ -151,12 +201,11 @@ async function recordTxn(env: Env, accountId: string, type: "credit" | "debit", 
  * be forgotten on one path.
  */
 async function requireOwnedAccount(request: Request, env: Env, id: string): Promise<{ account: Account } | Response> {
-	const auth = createAuth(env, new URL(request.url).origin);
-	const session = await auth.api.getSession({ headers: request.headers });
-	if (!session) return json({ error: "sign in required" }, 401);
+	const user = await authUser(request, env);
+	if (!user) return json({ error: "sign in or provide an API key" }, 401);
 	const account = await env.BANK_DB.prepare("SELECT * FROM accounts WHERE id = ?").bind(id).first<Account>();
 	if (!account) return json({ error: "account not found" }, 404);
-	if (account.user_id !== session.user.id) return json({ error: "not your account" }, 403);
+	if (account.user_id !== user.id) return json({ error: "not your account" }, 403);
 	return { account };
 }
 

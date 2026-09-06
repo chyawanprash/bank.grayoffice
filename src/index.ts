@@ -30,6 +30,8 @@ import {
 	handleTransfer,
 	handleSubscribe,
 	handleTick,
+	handleMintKey,
+	handleMe,
 	runHourlyCharges,
 } from "./bank/api";
 import { createAuth } from "./auth";
@@ -38,7 +40,7 @@ function withCors(res: Response): Response {
 	const headers = new Headers(res.headers);
 	headers.set("access-control-allow-origin", "*");
 	headers.set("access-control-allow-methods", "GET, POST, OPTIONS");
-	headers.set("access-control-allow-headers", "content-type");
+	headers.set("access-control-allow-headers", "content-type, authorization");
 	return new Response(res.body, { status: res.status, headers });
 }
 
@@ -73,6 +75,8 @@ export default {
 			if (path === "/bank/branches" && request.method === "GET") return withCors(await handleListBranches(env));
 			if (path === "/bank/leadership" && request.method === "GET") return withCors(await handleListLeadership(env));
 			if (path === "/bank/leaderboard" && request.method === "GET") return withCors(await handleLeaderboard(env));
+			if (path === "/bank/keys" && request.method === "POST") return withCors(await handleMintKey(request, env));
+			if (path === "/bank/me" && request.method === "GET") return withCors(await handleMe(request, env));
 			if (path === "/bank/account" && request.method === "POST") return withCors(await handleCreateAccount(request, env));
 
 			const acctMatch = path.match(/^\/bank\/account\/([^/]+)$/);
