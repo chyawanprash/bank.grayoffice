@@ -289,9 +289,15 @@ export async function handleTransfer(id: string, request: Request, env: Env): Pr
 	const reference = genRef(t.method);
 	const rail = t.method.toUpperCase();
 
-	// Internal transfer: destination is an APNA account that exists here.
-	const internal = t.to_account?.startsWith("APNA")
-		? await env.BANK_DB.prepare("SELECT * FROM accounts WHERE id = ?").bind(t.to_account).first<Account>()
+	// Internal transfer: the destination resolves to an APNA account that exists
+	// here. For UPI the account id can arrive as the upi_id itself, or as the
+	// local-part of a VPA ("APNA123...@apnabank"); for NEFT/IMPS/wire it's
+	// to_account.
+	const destId = [t.to_account, t.upi_id?.split("@")[0]]
+		.map((x) => x?.trim().toUpperCase())
+		.find((x) => x && x.startsWith("APNA"));
+	const internal = destId
+		? await env.BANK_DB.prepare("SELECT * FROM accounts WHERE id = ?").bind(destId).first<Account>()
 		: null;
 
 	const srcBalance = account.balance_cents - amountCents;
