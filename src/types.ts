@@ -531,6 +531,22 @@ export const GenerateRequestSchema = z.object({
 	scenario: z.string().optional().default("clean"),
 	seed: z.number().int().optional(),
 	format: z.enum(["pdf", "png", "csv", "xlsx", "json", "eml", "txt"]).optional().default("json"),
+	/** Override one party with a real company so an agent can test "we are the seller / buyer". IN invoice family only. */
+	self: z
+		.object({
+			role: z.enum(["supplier", "customer"]),
+			legal_name: z.string().min(1).max(160),
+			trade_name: z.string().max(160).optional(),
+			gstin: z.string().max(20).optional(),
+			state: z.string().max(60).optional(),
+			state_code: z.string().max(4).optional(),
+			city: z.string().max(80).optional(),
+			address: z.string().max(240).optional(),
+			postal_code: z.string().max(12).optional(),
+			email: z.string().max(120).optional(),
+			phone: z.string().max(24).optional(),
+		})
+		.optional(),
 });
 export type GenerateRequest = z.infer<typeof GenerateRequestSchema>;
 

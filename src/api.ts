@@ -86,7 +86,7 @@ export async function handleGenerate(request: Request, env: Env): Promise<Respon
 
 	const seed = req.seed ?? hashStringToSeed(`${req.jurisdiction}:${req.document_type}:${req.scenario}:${Date.now()}`);
 	const testId = `TEST-${req.document_type.toUpperCase()}-${seed}`;
-	const opts: InvoiceGenOptions = { documentType: req.document_type, testId, scenarioId: req.scenario, seed };
+	const opts: InvoiceGenOptions = { documentType: req.document_type, testId, scenarioId: req.scenario, seed, self: req.self };
 
 	const doc = generateDocument(req.jurisdiction, req.document_type, opts);
 	const rng = new Rng(seed);

@@ -194,26 +194,63 @@ function synthEInvoice(rng: Rng): EInvoiceInfo {
 	};
 }
 
+export interface SelfParty {
+	/** which side of the invoice this party sits on */
+	role: "supplier" | "customer";
+	legal_name: string;
+	trade_name?: string;
+	gstin?: string;
+	state?: string;
+	state_code?: string;
+	city?: string;
+	address?: string;
+	postal_code?: string;
+	email?: string;
+	phone?: string;
+}
+
 export interface InvoiceGenOptions {
 	documentType: DocumentType;
 	testId: string;
 	scenarioId: string;
 	seed: number;
+	/** Override one party with a caller-supplied company (e.g. "we are the buyer"). */
+	self?: SelfParty;
+}
+
+/** Overwrite the fields the caller supplied; keep synthetic values for the rest. */
+function applySelf(party: Party, self: SelfParty): Party {
+	return {
+		...party,
+		legal_name: self.legal_name,
+		trade_name: self.trade_name ?? self.legal_name,
+		address: self.address ?? party.address,
+		city: self.city ?? party.city,
+		state: self.state ?? party.state,
+		state_code: self.state_code ?? party.state_code,
+		postal_code: self.postal_code ?? party.postal_code,
+		gstin: self.gstin ?? party.gstin,
+		email: self.email ?? party.email,
+		phone: self.phone ?? party.phone,
+	};
 }
 
 export function buildInvoiceIN(rng: Rng, opts: InvoiceGenOptions): Invoice {
 	const dt = opts.documentType;
-	const supplier = synthPartyIN(rng, { withGstin: true });
+	let supplier = synthPartyIN(rng, { withGstin: true });
 	const isExport = dt === "export_invoice";
 	const isSez = dt === "sez_invoice";
 	const isB2C = dt === "b2c_invoice";
 	const isBillOfSupply = dt === "bill_of_supply" || dt === "invoice_cum_bill_of_supply";
 	const isReverseCharge = dt === "reverse_charge_invoice";
 
-	const customer = synthPartyIN(rng, {
+	let customer = synthPartyIN(rng, {
 		withGstin: !isB2C && !isExport,
 		countryOverride: isExport ? rng.pick(["United States", "United Arab Emirates", "United Kingdom", "Singapore"]) : undefined,
 	});
+
+	if (opts.self?.role === "supplier") supplier = applySelf(supplier, opts.self);
+	if (opts.self?.role === "customer") customer = applySelf(customer, opts.self);
 
 	let taxMode: "igst" | "cgst_sgst" | "zero_rated" | "none";
 	if (isExport || isSez) taxMode = "zero_rated";
