@@ -148,21 +148,13 @@ export async function handleLeaderboard(env: Env): Promise<Response> {
 			(SELECT COUNT(*) FROM transactions WHERE created_at >= ?1) AS last_minute_count`,
 	).bind(sinceIso).first<{ economy_cents: number; account_count: number; transaction_count: number; last_minute_count: number }>();
 
-	// Peak throughput ever observed (transactions in a rolling 60s window),
-	// kept as a high-water mark in KV. Seeded at 1000 - the rate a 2-account
-	// load test already sustained - so the figure reflects real D1 + Worker
-	// throughput, not whatever the bank happens to be doing this second.
 	const liveRate = totals?.last_minute_count ?? 0;
-	const storedPeak = Number((await env.DOCS.get("bank:peak_tpm")) ?? "1000");
-	const peakRate = Math.max(storedPeak, liveRate);
-	if (peakRate > storedPeak) await env.DOCS.put("bank:peak_tpm", String(peakRate));
 
 	return json({
 		total_economy: (totals?.economy_cents ?? 0) / 100,
 		total_accounts: totals?.account_count ?? 0,
 		total_transactions: totals?.transaction_count ?? 0,
 		transactions_per_minute: liveRate,
-		peak_transactions_per_minute: peakRate,
 		leaderboard: results.map((r) => ({
 			account_id: r.account_id,
 			holder_name: r.holder_name,

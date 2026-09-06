@@ -248,9 +248,9 @@
 					<div id="totalAccounts" style="font-size:1.5rem;font-weight:700">—</div>
 				</div>
 				<div style="flex:1;min-width:160px;border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:1rem">
-					<div style="font-size:0.8rem;opacity:0.7">Peak Transactions / min</div>
-					<div id="txPerMin" style="font-size:1.5rem;font-weight:700">—</div>
-					<div style="font-size:0.7rem;opacity:0.55;margin-top:0.25rem">Highest 60s throughput seen — <span id="txLiveNow">0</span> right now. Bound by D1 + Worker speed, not a hard limit.</div>
+					<div style="font-size:0.8rem;opacity:0.7">Transactions / min</div>
+					<div id="txLiveNow" style="font-size:1.5rem;font-weight:700">—</div>
+					<div style="font-size:0.7rem;opacity:0.55;margin-top:0.25rem">Live 60s throughput. Bound by D1 + Worker speed, not a hard limit.</div>
 				</div>
 			</section>
 
@@ -289,7 +289,6 @@
 						"₹" + (data.total_economy ?? 0).toLocaleString("en-IN", { minimumFractionDigits: 2 });
 					document.getElementById("totalTxns").textContent = (data.total_transactions ?? 0).toLocaleString("en-IN");
 					document.getElementById("totalAccounts").textContent = (data.total_accounts ?? 0).toLocaleString("en-IN");
-					document.getElementById("txPerMin").textContent = (data.peak_transactions_per_minute ?? 0).toLocaleString("en-IN");
 					document.getElementById("txLiveNow").textContent = (data.transactions_per_minute ?? 0).toLocaleString("en-IN");
 					const rows = data.leaderboard ?? [];
 					document.getElementById("rows").innerHTML = rows.length
